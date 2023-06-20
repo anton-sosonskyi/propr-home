@@ -15,7 +15,7 @@ export const LeftPanel = () => {
         Find the best agent for your property
       </h1>
 
-      <img src="src/assets/house.svg" alt="house" />
+      <img src="/house.svg" alt="house" />
     </div>
   );
 };
