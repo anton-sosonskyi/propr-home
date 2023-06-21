@@ -1,4 +1,4 @@
-import { FindAgent } from "./components/FindAgent"
+import { FindAgent } from "./features/propertyAgent/components/FindAgent";
 
 function App() {
   return (
