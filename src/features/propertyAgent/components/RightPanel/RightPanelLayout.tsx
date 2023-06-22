@@ -11,6 +11,22 @@ type Props = {
 export const RightPanelLayout = ({ children }: Props) => {
   const store = useStore();
   const stepPercent = useMemo(() => (store.currentStep / store.totalSteps) * 100, [store.currentStep]);
+  const handlePrev = () => {
+    if (store.currentStep === 0) {
+      return;
+    }
+    store.back()
+  }
+
+  const handleNext = () => {
+    if (store.currentStep === store.totalSteps) {
+      return;
+    }
+
+    store.next();
+  }
+
+  const isFinalStep = store.currentStep === store.totalSteps;
 
   return (
     <div className="h-full px-[42px] basis-1/2 flex flex-col justify-center items-center bg-[#f5f5f5] relative">
@@ -30,7 +46,7 @@ export const RightPanelLayout = ({ children }: Props) => {
               type="text"
               styleClass="text-base text-[#767676] font-semibold"
               icon={<LeftOutlined rev={undefined} />}
-              onClick={() => store.back()} >
+              onClick={handlePrev} >
               Back
             </AgentButton>
 
@@ -38,13 +54,23 @@ export const RightPanelLayout = ({ children }: Props) => {
               {`step ${store.currentStep}/${store.totalSteps}`}
             </span>
 
-            <AgentButton
-              type="default"
-              styleClass="py-[10px] px-[20px] flex  justify-center items-center text-sm font-semibold text-[#999] bg-[#c4c4c4] bg-opacity-40"
-              onClick={() => store.next()} >
-              Next
-              <RightOutlined rev={undefined} />
-            </AgentButton>
+            {isFinalStep ? (
+              <AgentButton
+                type="default"
+                styleClass="py-[10px] px-[20px] flex  justify-center items-center text-sm font-semibold text-[#fff] bg-[#00D188]"
+                onClick={() => {}}
+              >
+                Show matching agents
+              </AgentButton>
+            ) : (
+              <AgentButton
+                type="default"
+                styleClass="py-[10px] px-[20px] flex  justify-center items-center text-sm font-semibold text-[#999] bg-[#c4c4c4] bg-opacity-40"
+                onClick={handleNext} >
+                Next
+                <RightOutlined rev={undefined} />
+              </AgentButton>
+            )}
           </div>
         </>
       )}
