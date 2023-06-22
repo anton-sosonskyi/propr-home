@@ -8,6 +8,9 @@ import { FarmIcon } from './icons/FarmIcon';
 import { HistoricIcon } from './icons/HistoricIcon';
 import { InvestmenIcon } from './icons/InvestmenIcon';
 import { LuxuryIcon } from './icons/LuxuryIcon';
+import useStore from 'src/store/store';
+import { useFormContext } from 'react-hook-form';
+import { Answers } from 'src/features/propertyAgent/types/Answers';
 const agentFocus = [
   "Family Homes Specialist",
   "Investement Specialist",
@@ -31,6 +34,13 @@ const icons = [
 ];
 
 export const FindAgentFocus = () => {
+  const store = useStore();
+  const { setValue } = useFormContext();
+
+  const handleClick = (name: string, value: string) => {
+    setValue(name, value);
+    store.updateAnswers(name as keyof Answers, value);
+  }
   return (
     <>
       <h4 className="mb-14 text-2xl text-[#232b2f] tracking-wider">
@@ -42,7 +52,8 @@ export const FindAgentFocus = () => {
           <li key={item} className="list-none">
             <FindAgentValueButton
               icon={icons[index]}
-              onClick={() => { }}
+              onClick={() => handleClick("agentFocus", item)}
+              isActive={store.answers.agentFocus === item}
             >
               {item}
             </FindAgentValueButton>
