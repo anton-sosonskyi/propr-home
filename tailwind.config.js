@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         'main': 'rgba(35, 43, 47, 1)',
+        'green': '#00d188',
       }
     },
   },

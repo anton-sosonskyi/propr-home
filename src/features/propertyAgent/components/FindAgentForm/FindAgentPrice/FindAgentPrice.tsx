@@ -1,13 +1,16 @@
-import useStore from 'src/store/store';
+import { Radio, RadioChangeEvent } from 'antd';
 import { FindAgentValueButton } from '../../FindAgentValueButton';
+import { StepProps } from '../FindAgentForm';
+import { FindAgentStepNavigation } from '../FindAgentStepNavigation/FindAgentStepNavigation';
 import { FiveMedalIcon } from './icons/FiveMedalIcon';
 import { FourMedalIcon } from './icons/FourMedalIcon';
 import { SixMedalIcon } from './icons/SixMedalIcon';
 import { TheroMedalIcon } from './icons/TheroMedalIcon';
 import { ThreeMedalIcon } from './icons/ThreeMedalIcon';
 import { TwoMedalIcon } from './icons/TwoMedalIcon';
-import { useFormContext } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import { Answers } from 'src/features/propertyAgent/types/Answers';
+import { CustomRadioButton } from '../../CustomRadioButton';
 
 const icons = [
   <TheroMedalIcon />,
@@ -20,13 +23,14 @@ const icons = [
 
 const price = ["€ 300K or less", "€ 301K – € 500K", "€ 501K – € 600K", "€ 601K – € 900K", "€ 901K – € 1.2 M", "€ 1.2 M or more"];
 
-export const FindAgentPrice = () => {
-  const store = useStore();
-  const { setValue } = useFormContext();
+export const FindAgentPrice: React.FC<StepProps> = (props) => {
+  const { setCurrentStep, currentStep } = props;
+  const controller = useController({ name: "price" });
+  const { watch, getValues } = useFormContext();
+  const [propertyPrice] = watch(['price']);
 
-  const handleClick = (name: string, value: string) => {
-    setValue(name, value);
-    store.updateAnswers(name as keyof Answers, value);
+  const handleChange = ({ target: { value } }: RadioChangeEvent) => {
+    controller.field.onChange(value);
   }
   return (
     <>
@@ -34,19 +38,25 @@ export const FindAgentPrice = () => {
         What price do you think your property will sell for?
       </h4>
 
-      <ul className="w-full mb-[70px] grid grid-cols-2 justify-center gap-[20px]">
+      <Radio.Group
+      onChange={handleChange}
+      className="w-full mb-[70px] grid grid-cols-2 justify-center gap-[20px]">
         {price.map((item, index) => (
           <li key={item} className="list-none">
-            <FindAgentValueButton
+           <CustomRadioButton
+              value={item}
+              label={item}
               icon={icons[index]}
-              onClick={() => handleClick("price", item)}
-              isActive={store.answers.price === item}
-            >
-              {item}
-            </FindAgentValueButton>
+              isActive={propertyPrice === item}
+            />
           </li>
         ))}
-      </ul>
+      </Radio.Group>
+
+      <FindAgentStepNavigation
+        {...props}
+        isNextDisabled={getValues("price")  === ''}
+      />
     </>
   );
 };
