@@ -10,9 +10,7 @@ export const LeftPanelLayout = ({ children }: Props) => {
       <div className="absolute left-[44px] top-[27px]">
         <Logo />
       </div>
-
       {children}
-
       <img src="house.svg" alt="house" />
     </div>
   );

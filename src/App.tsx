@@ -1,9 +1,9 @@
-import { FindAgent } from "./features/propertyAgent/components/FindAgent";
+import { PropertyAgentPage } from "./features/propertyAgent/pages/PropertyAgentPage";
 
 function App() {
   return (
     <div className="w-screen h-screen">
-     <FindAgent />
+     <PropertyAgentPage />
     </div>
   );
 };

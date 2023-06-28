@@ -1,51 +1,46 @@
-import { Select, SelectProps } from "antd";
+import { Select, SelectProps, Spin } from "antd";
 import { FindAgentStepNavigation } from "../FindAgentStepNavigation/FindAgentStepNavigation";
 import { StepProps } from "../FindAgentForm";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import _ from "lodash";
-import { AgentApi } from "src/features/propertyAgent/api/agent-api";
-import './agentAddress.css';
-import { useController, useFormContext } from "react-hook-form";
+import { MapApi } from "src/features/map/api/map-api";
+import { useController } from "react-hook-form";
 import { PinIcon } from "./icons/PinIcon";
+import "./AgentAddress.style.css";
 
 export const FindAgentAddress: React.FC<StepProps> = (props) => {
-  const [data, setData] = useState<SelectProps['options']>([]);
-  const [searchValue, setSearchValue] = useState('');
+  const [data, setData] = useState<SelectProps["options"]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const controller = useController({ name: "address" });
-  const { watch, getValues } = useFormContext();
-  const [propertySellPeriod] = watch(['address']);
 
-  const handleSearch = _.debounce(async (newValue: string) => {
-    if (newValue === '') {
+  const handleSearch = useCallback(async (newValue: string) => {
+    if (newValue === "") {
       return;
     }
+    setIsLoading(true);
 
-    const resp = await AgentApi.getAddress(newValue);
-    
-    const result = resp.results.map((item: any) => {
-      if (!item.name) {
-        return;
-      }
+    const resp = await MapApi.getAddress(newValue);
 
-      return {
-        value: `${item.name}, ${item.country}`,
-        text: `${item.name}, ${item.country}`,
-      }
-    }).filter((item: any) => item !== undefined);
-   
+    const result = resp.results
+      .map((item: any) => {
+        return {
+          value: item.address_line1,
+          text: item.address_line1,
+        };
+      })
+      .filter((item: any) => item !== undefined);
+    setIsLoading(false);
     setData(_.uniqWith(result, _.isEqual));
-  }, 1000);
+  }, []);
 
-  const handleChange = (newValue: string) => {
-    setSearchValue(newValue);
-  };
-
-  const handleSelect = (value: string) => {
-    controller.field.onChange(value);
-  }
+  const handleChange = useCallback((newValue: string) => 
+    setSearchValue(newValue), []);
   
-  const isNextDiasbled = getValues("address") === '';
 
+  const handleSelect = useCallback((value: string) => 
+    controller.field.onChange(value), []);
+  
   return (
     <>
       <h4 className="mb-14 text-2xl text-[#232b2f] tracking-wider">
@@ -53,31 +48,32 @@ export const FindAgentAddress: React.FC<StepProps> = (props) => {
       </h4>
 
       <div className="w-full relative">
-      <Select
-        showSearch
-        value={propertySellPeriod || undefined}
-        placeholder="Property address"
-        style={{width: "100%" }}
-       
-        defaultActiveFirstOption={false}
-        optionFilterProp="label"
-        onSearch={handleSearch}
-        onChange={handleChange}
-        onSelect={handleSelect}
-        dropdownStyle={{fontSize: "16px", lineHeight: "24px", fontWeight: "600"}}
-        notFoundContent={null}
-        options={(data || []).map((d) => ({
-          value: d.value,
-          label: d.text,
-        }))}
-      />
+        <Select
+          showSearch
+          defaultOpen={true}
+          value={controller.field.value}
+          placeholder="Property address"
+          style={{ width: "100%" }}
+          popupClassName="ant-select-item-custom"
+          optionFilterProp="label"
+          onSearch={_.debounce(handleSearch, 500)}
+          onChange={handleChange}
+          onSelect={handleSelect}
+          notFoundContent={isLoading ? <Spin className="w-full" size="small" /> : null}
+          loading={isLoading}
+          bordered
+          options={(data || []).map((d) => ({
+            value: d.value,
+            label: d.text,
+          }))}
+        />
 
-      <PinIcon className="absolute left-[20px] bottom-[25px]" />
+        <PinIcon className="absolute left-[20px] bottom-[25px]" />
       </div>
 
       <FindAgentStepNavigation
         {...props}
-        isNextDisabled={isNextDiasbled}
+        isNextDisabled={controller.field.value === ""}
       />
     </>
   );

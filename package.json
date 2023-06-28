@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",
+    "@hookform/resolvers": "^3.1.1",
     "@types/lodash": "^4.14.195",
     "antd": "^5.6.2",
     "axios": "^1.4.0",

@@ -64,16 +64,6 @@ export const FindAgentStepNavigation: React.FC<Props> = ({
           </AgentButton>
         )}
 
-        {hideNextButton && (currentStep === totalSteps) && (
-          <AgentButton
-            type="default"
-            disabled={isNextDisabled}
-            styleClass="py-[18px] px-[20px] flex justify-center items-center text-lg font-semibold hover:text-white text-white bg-green"
-            onClick={handleNext} >
-            Show matching agents
-          </AgentButton>
-        )}
-
         {!hideNextButton && renderNextButton && (
           renderNextButton({ onClick: handleNext })
         )}

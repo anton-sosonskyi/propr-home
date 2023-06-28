@@ -1,13 +1,13 @@
 import { Radio, RadioChangeEvent } from "antd";
 import { CustomRadioButton } from "../../CustomRadioButton";
-import { FindAgentValueButton } from "../../FindAgentValueButton";
 import { StepProps } from "../FindAgentForm";
 import { FindAgentStepNavigation } from "../FindAgentStepNavigation/FindAgentStepNavigation";
 import { FourMonthIcon } from "./icons/FourMonthIcon";
 import { ListedIcon } from "./icons/ListedIcon";
 import { OneMonthIcon } from "./icons/OneMonthIcon";
 import { RightAwayIcon } from "./icons/RightAwayIcon";
-import { useController, useFormContext } from "react-hook-form";
+import { useController } from "react-hook-form";
+import { useCallback } from "react";
 
 const icons = [<RightAwayIcon />, <OneMonthIcon />, <FourMonthIcon />, <ListedIcon />];
 const sellPeriod = ["Right away", "1-3 Months", "4+ Months", "Already Listed"];
@@ -15,13 +15,11 @@ const sellPeriod = ["Right away", "1-3 Months", "4+ Months", "Already Listed"];
 export const FindAgentSellPeriod: React.FC<StepProps> = (props) => {
   const { setCurrentStep, currentStep } = props;
   const controller = useController({ name: "sellPeriod" });
-  const { watch } = useFormContext();
-  const [propertySellPeriod] = watch(['sellPeriod']);
 
-  const handleClick = ({ target: { value } }: RadioChangeEvent) => {
+  const handleClick = useCallback(({ target: { value } }: RadioChangeEvent) => {
     controller.field.onChange(value);
     setCurrentStep(currentStep + 1);
-  }
+  }, []);
 
   return (
     <>
@@ -39,7 +37,7 @@ export const FindAgentSellPeriod: React.FC<StepProps> = (props) => {
               value={item}
               label={item}
               icon={icons[index]}
-              isActive={propertySellPeriod === item}
+              isActive={controller.field.value === item}
               isArrow
             />
           </li>
@@ -47,7 +45,8 @@ export const FindAgentSellPeriod: React.FC<StepProps> = (props) => {
       </Radio.Group>
 
       <FindAgentStepNavigation
-        {...props} hideNextButton
+        {...props}
+        hideNextButton
       />
     </>
   );

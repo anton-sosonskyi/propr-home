@@ -1,5 +1,5 @@
 import { Radio, RadioChangeEvent } from 'antd';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { AgentButton } from '../../AgentButton';
 import { AppartmentIcon } from './icons/AppartmentIcon';
 import { BungaloIcon } from './icons/BungaloIcon';
@@ -7,28 +7,25 @@ import { HouseIcon } from './icons/HouseIcon';
 import { LandIcon } from './icons/LandIcon';
 import { CustomRadioButton } from '../../CustomRadioButton';
 import { StepProps } from '../FindAgentForm';
+import { useCallback } from 'react';
 
 const icons = [<AppartmentIcon />, <HouseIcon />, <BungaloIcon />, <LandIcon />];
-const propertyGoals = ["Sell", "Rent"]
+const propertyGoals = ["Sell", "Rent"];
 const propertyTypes = ["Apartment", "House", "Bungalow", "Land to build"];
 
 export const FindAgentStart: React.FC<StepProps> = (props) => {
   const { setCurrentStep, currentStep } = props;
-  const propertyGoalController = useController({ name: "propertyGoal" });
-  const propertyTypeController = useController({ name: "propertyType" });
-  const { watch, getValues } = useFormContext();
+  const goalController = useController({ name: "propertyGoal" });
+  const typeController = useController({ name: "propertyType" });
+  
+ 
+  const handleTypeChange = useCallback(({ target: { value } }: RadioChangeEvent) => (
+    typeController.field.onChange(value)), []);
+    
+  const handleGoalChange = useCallback(({ target: { value } }: RadioChangeEvent) =>(
+    goalController.field.onChange(value)),[]);
 
-  const [propertyGoalField, propertyTypeField] = watch(['propertyGoal', 'propertyType']);
-
-  const handleTypeChange = ({ target: { value } }: RadioChangeEvent) => {
-    propertyTypeController.field.onChange(value);
-  }
-
-  const handleGoalChange = ({ target: { value } }: RadioChangeEvent) => {
-    propertyGoalController.field.onChange(value);
-  }
-
-  const isDisabled = (getValues("propertyType") === "") && (getValues("propertyGoal") === "");
+  const isDisabled = typeController.field.value === '';
 
   return (
     <>
@@ -37,16 +34,19 @@ export const FindAgentStart: React.FC<StepProps> = (props) => {
       </h1>
 
       <Radio.Group
+        defaultValue={propertyGoals[0]}
         onChange={handleGoalChange}
         className="min-w-[366px] flex bg-green rounded-full"
       >
         {propertyGoals.map((item) => (
           <li key={item} className="w-full list-none flex justify-center rounded-full">
             <Radio.Button
+              key={item}
+              
               value={item}
-              checked={propertyGoalField === item}
-              style={{borderRadius: "20px"}}
-              className={`${"button-toggle"} w-full my-[6px] mx-[6px] flex justify-center hover:text-white text-lg border-green  ${propertyGoalField === item ? "bg-white" : "bg-green text-white"}`}
+              checked={goalController.field.value === item}
+              style={{ borderRadius: "20px" }}
+              className={`${"button-toggle"} w-full my-[6px] mx-[6px] flex justify-center hover:text-white text-lg border-green  ${goalController.field.value === item ? "bg-white" : "bg-green text-white"}`}
             >
               {item}
             </Radio.Button>
@@ -68,7 +68,7 @@ export const FindAgentStart: React.FC<StepProps> = (props) => {
               value={item}
               label={item}
               icon={icons[index]}
-              isActive={propertyTypeField === item}
+              isActive={typeController.field.value === item}
             />
           </li>
         ))}
