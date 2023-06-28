@@ -19,7 +19,7 @@ export const FindAgentStepNavigation: React.FC<Props> = ({
   isNextDisabled,
 }) => {
   const handleNext = () => {
-    if (currentStep > totalSteps) {
+    if (currentStep >= totalSteps) {
       return;
     }
     
