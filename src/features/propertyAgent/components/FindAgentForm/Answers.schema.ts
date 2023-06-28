@@ -11,3 +11,13 @@ export const ValidationSchema = yup.object({
 });
 
 export type ValidationSchemaType = yup.InferType<typeof ValidationSchema>;
+
+export type Answers = {
+  propertyGoal: string;
+  propertyType: string;
+  sellPeriod: string;
+  address: string;
+  price: string;
+  agentFocus: string;
+  isAgentInform: boolean;
+}
